@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering the Imperfect - Interactive Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* CORE SETUP */
+        :root {
+            --bg-color: #F5F5F0;
+            --navy: #1A202C;
+            --slate: #4A5568;
+            --error-red: #9B2C2C;
+            --accent-gold: #B7791F;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #2D3748;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* SLIDE CONTAINER */
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: var(--bg-color);
+            position: absolute;
+            display: none;
+            flex-direction: column;
+            padding: 60px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--navy);
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease-in-out;
+        }
+
+        .slide-container.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* DECORATIVE BACKGROUNDS */
+        .slide-bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.15;
+            filter: grayscale(100%);
+        }
+
+        .content-wrap {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+            margin: 0;
+        }
+
+        .slide-title {
+            font-size: 40px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--navy);
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+            width: fit-content;
+        }
+
+        /* LAYOUTS */
+        .center-layout {
+            text-align: center;
+            align-items: center;
+        }
+
+        .title-slide h1 { font-size: 80px; line-height: 1.1; margin-bottom: 20px; }
+        .title-slide p { font-size: 28px; font-style: italic; color: var(--slate); }
+
+        .section-slide h2 { font-size: 70px; }
+        .section-slide hr { width: 100px; border: 2px solid var(--accent-gold); margin: 30px auto; }
+
+        /* CORRECTION SLIDE STYLES */
+        .error-box {
+            background-color: #FFF5F5;
+            border-left: 15px solid var(--error-red);
+            padding: 40px 60px;
+            margin-bottom: 40px;
+            width: 100%;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .error-text {
+            color: var(--error-red);
+            font-size: 48px; /* Adjusted for longer sentences */
+            font-family: 'Merriweather', serif;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+
+        .cue-box {
+            text-align: left;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .cue-label {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 700;
+            color: var(--slate);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .cue-text {
+            font-size: 36px;
+            font-style: italic;
+            line-height: 1.4;
+            color: var(--navy);
+        }
+
+        /* TABLES & LISTS */
+        table { width: 100%; border-collapse: collapse; font-size: 24px; margin-top: 20px; }
+        th { background: var(--navy); color: white; padding: 20px; text-align: left; }
+        td { padding: 20px; border-bottom: 1px solid #E2E8F0; }
+
+        .bullet-list { list-style: none; padding: 0; }
+        .bullet-list li { font-size: 28px; margin-bottom: 30px; position: relative; padding-left: 50px; }
+        .bullet-list li::before { content: "•"; position: absolute; left: 0; color: var(--accent-gold); font-size: 40px; top: -10px; }
+
+        .nav-hint {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            font-size: 14px;
+            color: var(--slate);
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* EXPORT/PRINT OVERRIDES */
+        @media print {
+            body, html {
+                height: auto;
+                width: auto;
+                overflow: visible;
+                display: block;
+                background: white;
+            }
+            .slide-container {
+                display: flex !important;
+                opacity: 1 !important;
+                position: relative !important;
+                page-break-after: always;
+                box-shadow: none;
+                margin: 0 auto;
+                border: 1px solid #eee;
+            }
+            .nav-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide-container active title-slide center-layout" id="slide1">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/2555331841454725353" alt="Nostalgic background">
+    <div class="content-wrap">
+        <h1>Un Vistazo al Pasado</h1>
+        <p>Mastering the Imperfect: Review and Reflection</p>
+    </div>
+    <div class="nav-hint">Click anywhere to begin</div>
+</div>
+
+<!-- Slide 2: Section - Mechanics -->
+<div class="slide-container center-layout section-slide" id="slide2">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/6683411850272149802" alt="Fountain pen">
+    <div class="content-wrap">
+        <hr>
+        <h2>The Mechanics of Memory</h2>
+        <p style="font-size: 24px;">Structural foundations for a vivid narrative.</p>
+    </div>
+</div>
+
+<!-- Slide 3: Bullets - Usage -->
+<div class="slide-container" id="slide3">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/12097785448628504081" alt="Library books">
+    <h2 class="slide-title">When to use the Imperfect</h2>
+    <div class="content-wrap">
+        <ul class="bullet-list">
+            <li><strong>Habitual Actions:</strong> Things you "used to do" repeatedly (The video vs the photo).</li>
+            <li><strong>Atmosphere:</strong> Setting the scene (Weather, time, physical surroundings).</li>
+            <li><strong>Internal States:</strong> Descriptions of age, emotions, and feelings.</li>
+            <li><strong>Background Narrative:</strong> The continuous action interrupted by specific events.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Slide 4: Table - Conjugations -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">Conjugation Paradigm</h2>
+    <div class="content-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>-AR Verbs (-aba)</th>
+                    <th>-ER / -IR Verbs (-ía)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Yo / Él / Ella</td>
+                    <td>jugaba</td>
+                    <td>comía</td>
+                </tr>
+                <tr>
+                    <td>Nosotros</td>
+                    <td>jugábamos</td>
+                    <td>comíamos</td>
+                </tr>
+                <tr>
+                    <td>Ellos / Ustedes</td>
+                    <td>jugaban</td>
+                    <td>comían</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 30px; font-style: italic; font-size: 20px;">*Note: Accents are non-negotiable for precision.</p>
+    </div>
+</div>
+
+<!-- Slide 5: Section - Lab -->
+<div class="slide-container center-layout section-slide" id="slide5">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/18262445682082876865" alt="Magnifying glass">
+    <div class="content-wrap">
+        <hr>
+        <h2>The Correction Lab</h2>
+        <p style="font-size: 24px;">Analyzing real-world drafts to elevate our prose.</p>
+    </div>
+</div>
+
+<!-- Slide 6: Case 1 - Infinitive -->
+<div class="slide-container center-layout" id="slide6">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/7433249760331343783" alt="Typewriter keys">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"Ahora yo no Tengo mucho tiempo y <strong>yo no jugar</strong> en El parque."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">An infinitive is static, like a dictionary entry. Give this childhood habit a soul by matching it to the ongoing past tense.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Case 2 - Preterite vs Imperfect -->
+<div class="slide-container center-layout" id="slide7">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"En 2016 El invierno <strong>estuve muy frio</strong>."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Was the cold winter a single 'event' that finished in a second, or was it the background setting of your whole environment?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Case 3 - Agreement -->
+<div class="slide-container center-layout" id="slide8">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"Cuandó <strong>era jovenes</strong>, mi viva era muy divertido."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Check the "Who." If you are talking about yourself, should the adjective be plural? If you mean "we," the verb must follow.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: Case 4 - Gender/Tense Shift -->
+<div class="slide-container center-layout" id="slide9">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"La foto es en 2013 y <strong>la día son</strong> el diecisies de septembre."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Is 'día' truly feminine? Also, if the photo is from 2013, should the description be in the present or the past?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Case 5 - Verb Families -->
+<div class="slide-container center-layout" id="slide10">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"Yo <strong>comaba</strong> El helado con mi padre frequalmente."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">The phonetic lure of "-aba" is strong, but look at the infinitive: 'Comer.' Does an -ER verb belong to the "-aba" or "-ía" family?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11: Case 6 - Identity -->
+<div class="slide-container center-layout" id="slide11">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/11228734778656187666" alt="Desk background">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"Cuando yo era una niña yo <strong>estaba</strong> muy feliz."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Being happy as a child describes a characteristic state over time. Which verb, 'Ser' or 'Estar,' defines your essence in the past?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 12: Case 7 - Stem Changes -->
+<div class="slide-container center-layout" id="slide12">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"La nina en la foto <strong>quieraba</strong> iba al parque."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">The Imperfect is wonderfully regular. Does the 'ie' change from the present tense (quiero) actually survive in the past?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 13: Case 8 - Weather Nouns -->
+<div class="slide-container center-layout" id="slide13">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/3308313643271084854" alt="Sunset window">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"El clema <strong>estaba muy sol</strong>."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">The climate doesn't physically *become* the sun. Think about the verb we use to describe what the weather "makes" or "does."</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 14: Case 9 - Articles -->
+<div class="slide-container center-layout" id="slide14">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"requerdo <strong>los tiempos cuando estuve</strong> jovenes."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Foundation blocks: Use the Imperfect for ongoing states like 'being young,' and ensure your spelling of 'recuerdo' is accurate!</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 15: Case 10 - Noun vs Verb -->
+<div class="slide-container center-layout" id="slide15">
+    <img class="slide-bg-image" src="http://googleusercontent.com/image_collection/image_retrieval/18083947294033652008" alt="Chalkboard">
+    <div class="content-wrap">
+        <div class="error-box"><div class="error-text">"Cuando yo era jovenes, <strong>mi viva era</strong> muy divertido."</div></div>
+        <div class="cue-box">
+            <div class="cue-label">Linguistic Cue</div>
+            <div class="cue-text">Are we using the action 'I live' or the noun 'my life'? In Spanish, ensure you use 'vida' to anchor your description.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 16: Outro -->
+<div class="slide-container center-layout section-slide" id="slide16">
+    <div class="content-wrap">
+        <hr>
+        <h2>Ready for Revision</h2>
+        <p style="font-size: 32px; font-style: italic;">"Language is the brush with which we paint our memories."</p>
+    </div>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide-container');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            slide.style.opacity = '0';
+            setTimeout(() => {
+                if (!slide.classList.contains('active')) {
+                    slide.style.display = 'none';
+                }
+            }, 500);
+        });
+
+        const target = slides[index];
+        target.style.display = 'flex';
+        setTimeout(() => {
+            target.classList.add('active');
+            target.style.opacity = '1';
+        }, 50);
+    }
+
+    document.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " ") {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        } else if (e.key === "ArrowLeft") {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+    });
+</script>
+
+</body>
+</html>
